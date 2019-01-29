@@ -77,9 +77,6 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-// app.post('/login', (req, res, next) => {
-
-// });
 
 app.post('/signup', (req, res, next) => {
   return models.Users.create({username: req.body.username, password: req.body.password})
@@ -87,6 +84,19 @@ app.post('/signup', (req, res, next) => {
   .then(()=> res.redirect('/'))
   //.error((err) => res.status(500).send(err.code))
   .catch((err) => res.redirect('/signup'));
+});
+
+app.post('/login',(req, res, next) => {
+  return models.Users.find(req.body.password)
+  .then((password, salt) =>
+    {
+      if (password === undefined) {
+        throw new Error();
+      }
+      return models.Users.compare(req.body.password, password, salt)
+    })
+  .then(() => res.redirect('/'))
+  .catch((err) => res.redirect('/login'));
 });
 
 /************************************************************/
